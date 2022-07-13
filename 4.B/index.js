@@ -58,14 +58,31 @@ app.post('/add-provinsi', upload.single('upload-image'), (req, res) => {
     db.query(`INSERT INTO provinsi_tb (nama,diresmikan, photo, pulau) VALUES ('${data.nama}', '${data.diresmikan}', '${data.photo}', '${data.pulau}') ` , (error, results, fields) => {
         res.redirect('/');
     });
-
 });
 
+app.get('/update-provinsi/:id', upload.single('upload-image'), (req,res) => {
+    const id = req.params.id;
+    db.query(`SELECT * FROM provinsi_tb WHERE id = '${id}'`, (error, results, fields) => {
+        res.render('update-provinsi', { provinsi: results[0] });
+    });
+})
+// Routing POST
+app.post('/update-provinsi/:id', upload.single('upload-image'), (req, res) => {
+    const {id } = req.params;
+    let data = {
+        nama: req.body.nama,
+        diresmikan: req.body.diresmikan,
+        pulau: req.body.pulau,
+        photo: req.file.filename,
+    };
+        db.query(`UPDATE provinsi_tb SET nama='${data.nama}', diresmikan='${data.diresmikan}', pulau='${data.pulau}', photo='${data.photo}' WHERE id=${id} `, (error, results, fields) => {
+        res.redirect('/');
+    });
+});
+// delete provinsi
 app.get('/delete-provinsi/:id', (req, res) => {
     const {id} = req.params;
     db.query(`DELETE FROM provinsi_tb WHERE id = ${id}`,(err,results , fields) => {
-        console.log(results)
-        console.log(err)
         res.redirect('/');
     });
 });
